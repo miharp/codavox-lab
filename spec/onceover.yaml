@@ -1,0 +1,42 @@
+# Onceover compiles each role against a node factset.
+#
+# It proves a role is valid. It does NOT prove any node is classified into it —
+# manifests/site.pp owns that, and the two have to be kept in agreement by hand.
+# A role listed here with no matching node definition compiles clean forever while
+# never running on anything.
+classes:
+  - role::primary
+  - role::compiler
+  - role::agent
+
+nodes:
+  - puppet.example.com
+  - compiler01.example.com
+  - agent01.example.com
+
+class_groups:
+  primary_role:
+    - role::primary
+  compiler_role:
+    - role::compiler
+  agent_role:
+    - role::agent
+
+node_groups:
+  primary:
+    - puppet.example.com
+  compilers:
+    - compiler01.example.com
+  agents:
+    - agent01.example.com
+
+test_matrix:
+  - primary:
+      classes: primary_role
+      tests: spec
+  - compilers:
+      classes: compiler_role
+      tests: spec
+  - agents:
+      classes: agent_role
+      tests: spec

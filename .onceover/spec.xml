@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="rspec" tests="3" skipped="0" failures="0" errors="0" time="1.272168" timestamp="2026-07-26T10:42:50-04:00" hostname="macmini-mike.local">
+<properties>
+<property name="seed" value="54358"/>
+</properties>
+<testcase classname="spec.classes.role__agent_on_agent01" name="role::agent using fact set agent01.example.com is expected to compile into a catalogue without dependency cycles" file="./spec/classes/role__agent_on_agent01.example.com_spec.rb" time="0.648038"></testcase>
+<testcase classname="spec.classes.role__compiler_on_compiler01" name="role::compiler using fact set compiler01.example.com is expected to compile into a catalogue without dependency cycles" file="./spec/classes/role__compiler_on_compiler01.example.com_spec.rb" time="0.309616"></testcase>
+<testcase classname="spec.classes.role__primary_on_puppet" name="role::primary using fact set puppet.example.com is expected to compile into a catalogue without dependency cycles" file="./spec/classes/role__primary_on_puppet.example.com_spec.rb" time="0.312911"></testcase>
+</testsuite>

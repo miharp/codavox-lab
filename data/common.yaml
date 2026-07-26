@@ -1,0 +1,43 @@
+---
+# Version pins. Skew between an agent and the server it talks to produces failures
+# that look like code problems, so the lab pins rather than tracking latest.
+profile::openvox_agent::version: '8.28.1'
+profile::openvox_server::version: '8.15.1'
+
+# Written to /etc/codavox-lab-marker on every node. Change this, commit, deploy,
+# and reseal to watch a code change travel all the way to an applied resource —
+# not just to a new code_id.
+profile::base::marker_content: 'production'
+
+# --- codavox --------------------------------------------------------------
+#
+# Estate-wide settings, so a node running both the publisher and an agent still
+# resolves one consistent `codavox` class rather than declaring it twice with
+# different data.
+
+# codavox has no package repository yet (miharp/codavox#42), so the package comes
+# straight from a release asset. A literal rather than a URL assembled from a
+# version and an arch fact: a URL a profile builds is a URL nobody can grep for.
+# Every VM here is aarch64 (Apple silicon); another architecture overrides this in
+# data/nodes/<certname>.yaml.
+codavox::package_source: 'https://github.com/miharp/codavox/releases/download/v0.5.0/codavox_0.5.0_linux_arm64.rpm'
+
+# Where the agent deploys code and code-id reads from. Deliberately not the stock
+# /etc/puppetlabs/code/environments: a fresh OpenVox Server ships a populated
+# production skeleton there, and rename(2) cannot replace a real directory with a
+# symlink. PE moves its codedir for the same reason when versioned deploys are on.
+codavox::environmentpath: '/opt/puppetlabs/codavox/environments'
+
+# The publisher every compiler polls.
+codavox::agent_publisher: 'https://puppet.example.com:8150'
+
+# Compilers are authorized by the pp_role in their certificate, written into
+# csr_attributes.yaml before enrolment. An estate whose compiler certificates
+# predate codavox would list them under codavox::publish_allow_certnames instead,
+# since pp_role cannot be added to an already-issued certificate.
+codavox::publish_allow_roles:
+  - 'openvox_compiler'
+
+# Poll faster than the 30s default so the lab is quick to observe. Production has
+# no reason to: a converged fleet polls constantly and fetches nothing.
+codavox::agent_interval: '10s'
