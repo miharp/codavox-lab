@@ -55,6 +55,17 @@ demonstrate divergence — see [Things worth trying](#things-worth-trying).
 
 `192.168.57.x` so this lab and a `192.168.56.x` dev repo can both be up at once.
 
+### Memory
+
+About **7.4 GB** across the four VMs: 2560 for the primary, 2048 per compiler, 768
+for the agent. puppetserver's default heap is `-Xms2g -Xmx2g`, which would fill a
+2 GB VM and get the JVM OOM-killed, so provisioning caps it at 1 GB. That is a lab
+setting, not advice — a real compiler wants the default.
+
+Bring-up is sequential, so peak usage is roughly the total. If the host is tight,
+`vagrant up puppet compiler01 agent01` gives a working chain minus the divergence
+demo.
+
 ## Getting started
 
 ```console

@@ -80,6 +80,19 @@ EOF
       rpm -Uvh #{yum_release_base}/openvox8-release-el-9.noarch.rpm
   SHELL
 
+  # puppetserver defaults to -Xms2g -Xmx2g, which fills a 2GB VM and gets the JVM
+  # OOM-killed. Capping it is what lets four nodes fit in about 7.4GB rather than
+  # 9.2GB. A lab compiling a handful of catalogs does not need 2GB of heap; a real
+  # compiler does, so this is a lab setting and not advice.
+  puppetserver_heap = <<-SHELL
+    set -euo pipefail
+    install -d -m 0755 /etc/sysconfig
+    sed -i 's/^JAVA_ARGS=.*/JAVA_ARGS="-Xms512m -Xmx1024m -Djruby.logger.class=com.puppetlabs.jruby_utils.jruby.Slf4jLogger"/' \
+      /etc/sysconfig/puppetserver
+    grep -q 'Xmx1024m' /etc/sysconfig/puppetserver || \
+      echo 'JAVA_ARGS="-Xms512m -Xmx1024m"' >> /etc/sysconfig/puppetserver
+  SHELL
+
   # csr_attributes.yaml has to exist before the node's first check-in. pp_role is an
   # X.509 extension, so it is fixed when the certificate is issued and cannot be
   # added afterwards without revoking and re-enrolling. codavox's publisher
@@ -102,7 +115,7 @@ EOF
     node.vm.network "private_network", ip: "192.168.57.10"
 
     node.vm.provider "parallels" do |prl|
-      prl.memory = 3072
+      prl.memory = 2560
       prl.cpus = 2
     end
 
@@ -122,6 +135,8 @@ EOF
       /opt/puppetlabs/bin/puppet config set --section main certname puppet.example.com
       /opt/puppetlabs/bin/puppet config set --section main server puppet.example.com
       /opt/puppetlabs/bin/puppet config set --section server dns_alt_names puppet,puppet.example.com
+
+#{puppetserver_heap}
 
       # Only these three certnames are autosigned. The guide has you run
       # `puppetserver ca list` and `ca sign --certname` by hand, which is right for
@@ -188,7 +203,7 @@ EOF
       node.vm.network "private_network", ip: "192.168.57.#{11 + i}"
 
       node.vm.provider "parallels" do |prl|
-        prl.memory = 2560
+        prl.memory = 2048
         prl.cpus = 2
       end
 
@@ -198,6 +213,8 @@ EOF
         set -euo pipefail
 
         dnf install -y -q openvox-server
+
+#{puppetserver_heap}
 
         /opt/puppetlabs/bin/puppet config set --section main certname #{name}.example.com
         /opt/puppetlabs/bin/puppet config set --section main server puppet.example.com
@@ -255,7 +272,7 @@ EOF
     node.vm.network "private_network", ip: "192.168.57.13"
 
     node.vm.provider "parallels" do |prl|
-      prl.memory = 1024
+      prl.memory = 768
       prl.cpus = 1
     end
 
