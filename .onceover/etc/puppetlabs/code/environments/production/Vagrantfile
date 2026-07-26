@@ -7,8 +7,8 @@
 #   install OpenVox Server -> enrol agents -> control repo -> r10k -> deploy
 #
 # The one deviation is the r10k remote: a file:// URL against this repo's own .git,
-# synced read-only into the primary. That keeps the lab offline and makes the
-# iteration loop "commit, then deploy" rather than "push, then deploy". Everything
+# synced read-only into the primary, so iterating is "commit, then deploy" rather
+# than "push, then deploy". Module fetches still reach the network. Everything
 # downstream is unaffected, because r10k still produces a real resolved tree.
 #
 #   Topology                          serves                 gets code from
@@ -40,7 +40,13 @@ Vagrant.configure("2") do |config|
     ? 'https://s3.osuosl.org/openvox-artifacts/repo_test/yum' \
     : 'https://yum.voxpupuli.org'
 
-  config.vm.box = "bento/centos-stream-10"
+  # EL9, matching what codavox's own integration harness and ovadm both validate
+  # on (rockylinux/rockylinux:9-ubi-init). Deliberately not EL10: this lab exists to
+  # find codavox bugs, and EL10 is far enough ahead of the Puppet module ecosystem
+  # that its gaps show up as failures which look like codavox problems. The dev
+  # control repo needed seven lines of postgresql and dnf overrides for EL10, and
+  # puppetlabs/firewall cannot persist rules there at all.
+  config.vm.box = "bento/rockylinux-9"
 
   # Written into /etc/hosts on every node. The lab has no DNS, and codavox verifies
   # the publisher's certificate against its certname, so forward resolution has to
@@ -71,7 +77,7 @@ EOF
 
     dnf install -y -q curl
     rpm -q openvox8-release >/dev/null 2>&1 || \
-      rpm -Uvh #{yum_release_base}/openvox8-release-el-10.noarch.rpm
+      rpm -Uvh #{yum_release_base}/openvox8-release-el-9.noarch.rpm
   SHELL
 
   # csr_attributes.yaml has to exist before the node's first check-in. pp_role is an

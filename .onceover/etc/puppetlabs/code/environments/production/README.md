@@ -30,14 +30,6 @@ exactly what codavox is designed to seal.
 
 ## Topology
 
-All four nodes are **EL9** (`bento/rockylinux-9`), matching what codavox's own
-integration harness and ovadm validate on (`rockylinux/rockylinux:9-ubi-init`).
-
-Deliberately not EL10. This lab exists to find codavox bugs, and EL10 is far enough
-ahead of the Puppet module ecosystem that its gaps surface as failures that look
-like codavox problems — the dev control repo needed seven lines of postgresql and
-dnf overrides for it, and `puppetlabs/firewall` cannot persist rules there at all.
-
 | node | IP | serves | gets code from |
 |---|---|---|---|
 | `puppet` | 192.168.57.10 | **no agents** | r10k, from `file:///vagrant-src/.git` |
@@ -202,7 +194,7 @@ anything, which is a mistake that has already been made once.
 | path | what |
 |---|---|
 | `Vagrantfile` | the four nodes and their provisioning |
-| `Puppetfile` | four modules, including `codavox` pinned by tag |
+| `Puppetfile` | modules, including `codavox` pinned by tag |
 | `manifests/site.pp` | node definitions; keep in step with onceover |
 | `data/` | Hiera; all `codavox::*` settings live here |
 | `site-modules/profile/` | `base`, `openvox_server`, `codavox::publisher`, `codavox::compiler` |

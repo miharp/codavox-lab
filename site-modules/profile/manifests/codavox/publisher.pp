@@ -9,20 +9,13 @@
 # sets to /etc/puppetlabs/code/environments. codavox only reads it: it writes
 # nothing there and keeps no copy, so it adds no code directory to this node.
 #
-# @param port
-#   The port the publisher listens on, for the firewall rule. Must agree with
-#   `codavox::publish_listen`, which is what codavox actually reads.
-class profile::codavox::publisher (
-  Stdlib::Port $port = 8150,
-) {
+# The publisher's port is opened by Vagrant provisioning with `firewall-cmd`, not
+# managed here. puppetlabs/firewall cannot persist rules on EL9 or EL10 without
+# iptables-services, since both default to firewalld — and a lab validating codavox
+# should not spend its failures on firewall plumbing. Compilers dial in and nothing
+# connects out to them, so 8150 inbound on this node is the only rule the estate
+# needs.
+class profile::codavox::publisher {
   include codavox
   include codavox::publish
-
-  # Compilers dial in; nothing connects out to them. This is the only inbound rule
-  # codavox needs anywhere in the estate.
-  firewall { '100 allow codavox publisher':
-    dport => $port,
-    proto => 'tcp',
-    jump  => 'ACCEPT',
-  }
 }

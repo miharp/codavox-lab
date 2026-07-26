@@ -5,7 +5,6 @@ forge 'https://forge.puppet.com'
 # compiled and applied.
 mod 'puppetlabs/stdlib',       '9.7.0'
 mod 'puppetlabs/inifile',      '6.4.1'
-mod 'puppetlabs/firewall',     '8.5.0'
 # yumrepo left Puppet core. Real nodes get it bundled with openvox-agent, but a
 # compile-only environment has to declare it or every RedHat catalog fails with
 # "Unknown resource type: 'yumrepo'".
