@@ -51,7 +51,7 @@ Vagrant.configure("2") do |config|
   # Written into /etc/hosts on every node. The lab has no DNS, and codavox verifies
   # the publisher's certificate against its certname, so forward resolution has to
   # work for `https://puppet.example.com:8150` to be reachable at all.
-  hosts = <<-HOSTS
+  hosts = <<~HOSTS
     192.168.57.10 puppet.example.com puppet
     192.168.57.11 compiler01.example.com compiler01
     192.168.57.12 compiler02.example.com compiler02
@@ -62,7 +62,8 @@ Vagrant.configure("2") do |config|
   common = <<-SHELL
     set -euo pipefail
 
-    grep -q compiler01.example.com /etc/hosts || cat >> /etc/hosts <<'EOF'
+    grep -q '# codavox-lab' /etc/hosts || cat >> /etc/hosts <<'EOF'
+# codavox-lab
 #{hosts}
 EOF
 
