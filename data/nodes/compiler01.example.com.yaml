@@ -2,3 +2,7 @@
 # Nothing codavox-specific: the agent settings and the publisher URL are estate-wide
 # in common.yaml, and profile::codavox::compiler wires OpenVox Server by default.
 # The file exists so per-node overrides have an obvious home.
+# Prune environments the publisher no longer advertises. Off by default because
+# deleting is destructive; enabled here on one compiler only, so the difference
+# against compiler02 is observable.
+codavox::agent_prune_environments: true
