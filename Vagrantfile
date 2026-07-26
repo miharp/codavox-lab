@@ -215,6 +215,14 @@ EOF
 
         dnf install -y -q openvox-server
 
+        # Agents connect here for catalogs. Dropping puppetlabs/firewall meant the
+        # ports became provisioning's job, and this one was missed the first time:
+        # both compilers converged fine, and agent01 then failed with "No route to
+        # host" — a failure that looks like DNS or codavox and is neither.
+        # Compilers need 8140 only; they serve catalogs, they do not publish.
+        firewall-cmd --add-port=8140/tcp --permanent >/dev/null
+        firewall-cmd --reload >/dev/null
+
 #{puppetserver_heap}
 
         /opt/puppetlabs/bin/puppet config set --section main certname #{name}.example.com
