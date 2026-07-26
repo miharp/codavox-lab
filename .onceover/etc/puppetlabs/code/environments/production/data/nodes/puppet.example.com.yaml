@@ -1,7 +1,0 @@
----
-# The publisher's basedir is r10k's basedir, which the OpenVox getting-started
-# guide sets to the codedir. codavox only reads it — it writes nothing there and
-# keeps no copy — so following the guide produces exactly the clean resolved tree
-# codavox is designed around, with no extra staging step to arrange.
-codavox::basedir: '/etc/puppetlabs/code/environments'
-codavox::publish_listen: ':8150'
