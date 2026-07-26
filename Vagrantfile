@@ -302,12 +302,19 @@ EOF
       /opt/puppetlabs/bin/puppet agent -t --waitforlock 60 || true
       systemctl disable --now puppet 2>/dev/null || true
 
-      echo "[agent01] marker:"
-      cat /etc/codavox-lab-marker 2>/dev/null || echo "  (not applied)"
-      echo "[agent01] catalog code_id:"
-      grep -o '"code_id":"[^"]*"' \
-        /opt/puppetlabs/puppet/cache/client_data/catalog/agent01.example.com.json \
-        2>/dev/null || echo "  (none — not a static catalog)"
+      echo "[agent01] marker: $(cat /etc/codavox-lab-marker 2>/dev/null || echo '(not applied)')"
+
+      # The cached catalog is written as the run finishes, so reading it straight
+      # afterwards can lose the race. Say which case happened rather than printing
+      # a blank line, which is what the first version did and which reads as a
+      # failure when it is not one.
+      catalog=/opt/puppetlabs/puppet/cache/client_data/catalog/agent01.example.com.json
+      if [ -f "$catalog" ]; then
+        id=$(grep -o '"code_id":"[^"]*"' "$catalog" | head -1 || true)
+        echo "[agent01] catalog ${id:-has no code_id — not a static catalog}"
+      else
+        echo "[agent01] no cached catalog yet; see the README for how to check it"
+      fi
     SHELL
   end
 end
