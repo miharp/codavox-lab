@@ -7,8 +7,8 @@
 #   install OpenVox Server -> enrol agents -> control repo -> r10k -> deploy
 #
 # The one deviation is the r10k remote: a file:// URL against this repo's own .git,
-# synced read-only into the primary. That keeps the lab offline and makes the
-# iteration loop "commit, then deploy" rather than "push, then deploy". Everything
+# synced read-only into the primary, so iterating is "commit, then deploy" rather
+# than "push, then deploy". Module fetches still reach the network. Everything
 # downstream is unaffected, because r10k still produces a real resolved tree.
 #
 #   Topology                          serves                 gets code from

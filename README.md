@@ -86,8 +86,12 @@ same one its `code-id` reads.
 ### The two deviations, and why
 
 **The r10k remote is `file:///vagrant-src/.git`**, not an https URL. The repo is
-synced into the primary read-only and r10k clones from its `.git`. This keeps the
-lab offline and makes the loop *commit → deploy* instead of *push → deploy*.
+synced into the primary read-only and r10k clones from its `.git`, so the loop is
+*commit → deploy* rather than *push → deploy* and the control repo needs no remote
+host. Module fetches still reach the network — the Puppetfile pulls from the Forge
+and from GitHub — so this is not an air-gapped lab, just one that does not require
+pushing to iterate.
+
 Nothing downstream changes: r10k still produces a real resolved tree from a
 committed branch, so an uncommitted edit is invisible to the fleet. That is the
 point, not a limitation.
