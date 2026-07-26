@@ -192,7 +192,7 @@ EOF
       systemctl disable --now puppet 2>/dev/null || true
 
       echo "[primary] serving:"
-      /opt/puppetlabs/bin/codavox compilers 2>/dev/null || true
+      /usr/bin/codavox compilers 2>/dev/null || true
       journalctl -u codavox-publish --no-pager -n 3 || true
     SHELL
   end
@@ -245,13 +245,13 @@ EOF
         # rather than relying on timing.
         echo "[#{name}] waiting for codavox to converge"
         for i in $(seq 1 30); do
-          if /opt/puppetlabs/bin/codavox code-id production >/dev/null 2>&1; then
-            echo "[#{name}] serving $(/opt/puppetlabs/bin/codavox code-id production)"
+          if /usr/bin/codavox code-id production >/dev/null 2>&1; then
+            echo "[#{name}] serving $(/usr/bin/codavox code-id production)"
             break
           fi
           sleep 4
         done
-        /opt/puppetlabs/bin/codavox code-id production >/dev/null 2>&1 \
+        /usr/bin/codavox code-id production >/dev/null 2>&1 \
           || { echo "[#{name}] codavox never converged"; journalctl -u codavox-agent --no-pager -n 20; exit 1; }
 
         systemctl restart puppetserver
