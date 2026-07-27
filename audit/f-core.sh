@@ -115,6 +115,40 @@ else
   bad "no revocation in the publisher log"
 fi
 
+hdr "F12. #49 regression: a skipped directory is named, and dot-dirs are not"
+vm puppet 'sudo bash -c "
+  B=/etc/puppetlabs/code/environments
+  mkdir -p \$B/feature-my-branch/manifests \$B/.hidden-audit
+  systemctl reload codavox-publish; sleep 4
+  journalctl -u codavox-publish --no-pager --since \"15 sec ago\" | sed \"s/.*codavox\[[0-9]*\]: //\" | grep -E \"^skipped\" || echo NO_SKIP_LINE
+"' > /tmp/f12.out 2>&1
+sed 's/^/     /' /tmp/f12.out
+if grep -q "skipped feature-my-branch" /tmp/f12.out; then
+  ok "the invalid name was reported"
+else
+  bad "an invalid directory was skipped silently"
+fi
+if grep -q "hidden-audit" /tmp/f12.out; then
+  bad "a dot-prefixed directory was reported as a problem"
+else
+  ok "the dot-prefixed directory stayed silent"
+fi
+
+# Following the advice has to work, or the message is just noise.
+vm puppet 'sudo bash -c "
+  B=/etc/puppetlabs/code/environments
+  mv \$B/feature-my-branch \$B/feature_my_branch
+  systemctl reload codavox-publish; sleep 4
+  journalctl -u codavox-publish --no-pager --since \"10 sec ago\" | sed \"s/.*codavox\[[0-9]*\]: //\" | grep -E \"^(re)?sealed feature_my_branch|^skipped\" || true
+"' > /tmp/f12b.out 2>&1
+sed 's/^/     /' /tmp/f12b.out
+if grep -qE "sealed feature_my_branch" /tmp/f12b.out && ! grep -q "^ *skipped" /tmp/f12b.out; then
+  ok "renaming it cleared the warning and the environment is served"
+else
+  bad "the fix the message recommends did not work"
+fi
+vm puppet 'sudo bash -c "rm -rf /etc/puppetlabs/code/environments/feature_my_branch /etc/puppetlabs/code/environments/.hidden-audit; systemctl reload codavox-publish"'
+
 echo
 vm puppet 'sudo codavox compilers' | sed 's/^/     /'
 echo

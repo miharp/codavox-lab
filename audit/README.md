@@ -15,7 +15,7 @@ Run them against a lab that is already up and converged
 | `c-integrity.sh` | primary | a tampered artifact, a missing CRL, a CRL from another CA, an empty allowlist, a nonexistent basedir |
 | `d-scale.sh` | primary | a ~13 MB tree, 21 environments, reseal cost |
 | `e-concurrency.sh` | **host** | rapid reseals, `SIGKILL` mid-sync, an in-flight download whose artifact is reaped, simultaneous fetches |
-| `f-core.sh` | **host** | the core suite plus regressions for #47, #48, #55, #56 |
+| `f-core.sh` | **host** | the core suite plus regressions for #47, #48, #49, #55, #56 |
 | `g-deploy.sh` | primary | `codavox deploy`, and `deploy-server` token auth and history |
 
 ```console
