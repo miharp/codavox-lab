@@ -17,7 +17,7 @@ vm()  { vagrant ssh "$1" -c "$2" 2>/dev/null | tr -d '\r'; }
 hdr "F1. version actually under test"
 for h in puppet compiler01 compiler02; do
   v=$(vm "$h" 'codavox version')
-  if [ "$v" = "0.6.1" ]; then ok "$h: $v"; else bad "$h: $v, want 0.6.1"; fi
+  if [ "$v" = "0.6.2" ]; then ok "$h: $v"; else bad "$h: $v, want 0.6.2"; fi
 done
 
 hdr "F2. both compilers converged, and agree with their own code-id"
