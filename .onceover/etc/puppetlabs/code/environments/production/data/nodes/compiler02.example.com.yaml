@@ -1,0 +1,4 @@
+---
+# Nothing codavox-specific: the agent settings and the publisher URL are estate-wide
+# in common.yaml, and profile::codavox::compiler wires OpenVox Server by default.
+# The file exists so per-node overrides have an obvious home.

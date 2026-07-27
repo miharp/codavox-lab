@@ -1,0 +1,3 @@
+# r10k installs Puppetfile modules here.
+modules/
+.vagrant/

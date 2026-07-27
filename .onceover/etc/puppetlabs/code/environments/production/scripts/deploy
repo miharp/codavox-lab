@@ -1,0 +1,44 @@
+#!/bin/bash
+# Deploy the committed control repo and push it to the fleet.
+#
+# The lab's iteration loop, and the reason the r10k remote is file://: commit on
+# the host, run this, watch it land. No push, no network.
+#
+#   ./scripts/deploy            # deploy production, reseal, report
+#   ./scripts/deploy --watch    # ... then wait for both compilers to converge
+set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
+cd "$here/.." || exit 1
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "warning: uncommitted changes will NOT be deployed." >&2
+  echo "         r10k deploys committed branches; that is deliberate." >&2
+fi
+
+echo "==> r10k deploy environment production"
+vagrant ssh puppet -c 'sudo /opt/puppetlabs/puppet/bin/r10k deploy environment production -v -p' 2>/dev/null
+
+# The publisher seals on SIGHUP, which is what `systemctl reload` sends. Sealing
+# walks and hashes the tree, so it happens once per deploy rather than per request —
+# otherwise two compilers polling either side of an r10k run would see different
+# ids for one deploy.
+echo "==> reseal"
+vagrant ssh puppet -c 'sudo systemctl reload codavox-publish' 2>/dev/null
+sleep 3
+vagrant ssh puppet -c 'sudo journalctl -u codavox-publish --no-pager -n 2' 2>/dev/null | tr -d '\r'
+
+if [ "${1:-}" = "--watch" ]; then
+  echo "==> waiting for the fleet"
+  for _ in $(seq 1 30); do
+    out=$(vagrant ssh puppet -c 'sudo codavox compilers' 2>/dev/null | tr -d '\r')
+    ids=$(printf '%s\n' "$out" | awk 'NR>1 && $3 != "-" {print $3}' | sort -u | grep -c . || true)
+    reported=$(printf '%s\n' "$out" | awk 'NR>1 && $3 != "-"' | wc -l | tr -d ' ')
+    if [ "$reported" -ge 2 ] && [ "$ids" -eq 1 ]; then
+      printf '%s\n' "$out"; echo "==> converged"; exit 0
+    fi
+    sleep 5
+  done
+  echo "==> did not converge; current state:"
+fi
+
+vagrant ssh puppet -c 'sudo codavox compilers' 2>/dev/null | tr -d '\r'

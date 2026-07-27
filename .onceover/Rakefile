@@ -1,0 +1,6 @@
+require 'voxpupuli/test/rake'
+
+desc "Run acceptance tests"
+RSpec::Core::RakeTask.new(:acceptance) do |t|
+  t.pattern = 'spec/acceptance'
+end
