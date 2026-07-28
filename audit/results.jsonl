@@ -9,3 +9,14 @@
 {"batch": "b", "check": "B8", "codavox": "0.6.2", "commit": "d0a754b", "detail": "parses", "run": "2026-07-28T14:49:19Z", "status": "pass"}
 {"batch": "b", "check": "B9", "codavox": "0.6.2", "commit": "d0a754b", "detail": "both refused", "run": "2026-07-28T14:49:19Z", "status": "pass"}
 {"batch": "b", "check": "B10", "codavox": "0.6.2", "commit": "d0a754b", "detail": "version 0.6.2, 64 lines of help", "run": "2026-07-28T14:49:19Z", "status": "pass"}
+{"batch": "b", "check": "B1", "codavox": "0.6.2", "commit": "71adb36", "detail": "reproducible: f01ce775442f", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B1", "codavox": "0.6.2", "commit": "71adb36", "detail": "matches what the publisher advertises, so seal and publish agree", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B2", "codavox": "0.6.2", "commit": "71adb36", "detail": "327 manifest lines", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B3", "codavox": "0.6.2", "commit": "71adb36", "detail": "refused", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B4", "codavox": "0.6.2", "commit": "71adb36", "detail": "2acf8dcec34b2f9a7a77050868359d57d4562cfc\tdeployed 2026-07-28 09:29:04", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B5", "codavox": "0.6.2", "commit": "71adb36", "detail": "valid JSON with a commit", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B6", "codavox": "0.6.2", "commit": "71adb36", "detail": "exit 0 and says so \u2014 provenance is best effort, not load-bearing", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B7", "codavox": "0.6.2", "commit": "71adb36", "detail": "refused", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B8", "codavox": "0.6.2", "commit": "71adb36", "detail": "parses", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B9", "codavox": "0.6.2", "commit": "71adb36", "detail": "both refused", "run": "2026-07-28T14:49:30Z", "status": "pass"}
+{"batch": "b", "check": "B10", "codavox": "0.6.2", "commit": "71adb36", "detail": "version 0.6.2, 64 lines of help", "run": "2026-07-28T14:49:30Z", "status": "pass"}
