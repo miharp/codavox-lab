@@ -25,7 +25,10 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version-file: .ruby-version
+          # No ruby-version: the action reads .ruby-version when it is unset,
+          # which is what this repo wants. Naming a version here would be a
+          # second place to update. (`ruby-version-file` is not an input it has;
+          # setting it only produced a warning while the default did the work.)
           bundler-cache: true
 
       - name: puppet parser validate
@@ -50,9 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version-file: .ruby-version
+      - uses: ruby/setup-ruby@v1  # reads .ruby-version
 
       - name: Every data file is valid YAML
         # codavox rejects unknown keys outright, so a typo here is a daemon that
@@ -97,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: streetsidesoftware/cspell-action@v7
+      - uses: streetsidesoftware/cspell-action@v8
         with:
           files: '**/*.md'
           incremental_files_only: false
