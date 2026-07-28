@@ -204,6 +204,13 @@ EOF
       done
       /opt/puppetlabs/bin/puppet agent -t --waitforlock 60 || true
 
+      # A third run, because the catalog run 2 applied was compiled before run 2
+      # wired the server — so it carries no code_id. Without this the node ends
+      # up correctly wired but holding an ordinary catalog, and the lab would
+      # stop one run short of showing the property it exists to show. An operator
+      # doing this by hand needs the same extra run.
+      /opt/puppetlabs/bin/puppet agent -t --waitforlock 60 || true
+
       # The agent is left off on every node. This is a lab for watching specific
       # things happen, and a background agent run in the middle of an observation
       # is noise.
@@ -211,6 +218,8 @@ EOF
 
       echo "[primary] serving:"
       /usr/bin/codavox code-id production 2>/dev/null || echo "  (not converged)"
+      echo "[primary] its own catalog carries:"
+      python3 -c 'import json;print("  code_id:", json.load(open("/opt/puppetlabs/puppet/cache/client_data/catalog/puppet.example.com.json")).get("code_id"))' 2>/dev/null || true
       /usr/bin/codavox compilers 2>/dev/null || true
       journalctl -u codavox-publish --no-pager -n 3 || true
     SHELL
