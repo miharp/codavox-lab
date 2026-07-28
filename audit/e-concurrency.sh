@@ -9,6 +9,18 @@ set -uo pipefail
 cd /Users/michaelharp/projects/codavox-lab || exit 1
 
 FAILED=0
+
+# This batch commits to the control repo to trigger deploys, so it refuses to
+# start with other work in the tree: `git commit` here would sweep it up, and an
+# audit run has no business authoring someone else's change. Not hypothetical —
+# an uncommitted Vagrantfile edit was once committed under this suite's message,
+# and was the only reason a check went green.
+if ! git diff-index --quiet HEAD -- 2>/dev/null; then
+  printf '\033[1;31mrefusing to run:\033[0m the working tree has uncommitted changes.\n'
+  git status --short | sed 's/^/     /'
+  printf 'Commit or stash them first; this batch commits to the control repo.\n'
+  exit 1
+fi
 ok()  { printf '  \033[1;32mok\033[0m   %s\n' "$1"; }
 bad() { printf '  \033[1;31mFAIL\033[0m %s\n' "$1"; FAILED=1; }
 hdr() { printf '\n\033[1;34m==>\033[0m %s\n' "$1"; }
@@ -16,7 +28,12 @@ vm()  { vagrant ssh "$1" -c "$2" 2>/dev/null | tr -d '\r'; }
 
 bump() {
   sed -i '' "s/^profile::base::marker_content: .*/profile::base::marker_content: '$1'/" data/common.yaml
-  git commit -aqm "audit: $1" >/dev/null 2>&1 || true
+  # Only this file, and an empty commit is a failure rather than something to
+  # swallow: a bump that changed nothing deploys nothing, and every check below
+  # would then be comparing a node against itself and passing.
+  if ! git commit -qm "audit: $1" -- data/common.yaml; then
+    bad "bump $1 produced no commit, so nothing was deployed"
+  fi
   vm puppet 'sudo /opt/puppetlabs/puppet/bin/r10k deploy environment production -p >/dev/null 2>&1; sudo systemctl reload codavox-publish'
 }
 

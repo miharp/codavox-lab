@@ -5,6 +5,11 @@
     "MD060": false  // table-column-style: too prescriptive
   },
   "ignores": [
-    "vendor/**"
+    "vendor/**",
+    // onceover builds a throwaway control repo here, vendored modules and all.
+    // Gitignored, so CI never sees it — this only keeps a local run honest
+    // against what CI actually checks.
+    ".onceover/**",
+    "modules/**"
   ]
 }

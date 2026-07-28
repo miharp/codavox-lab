@@ -1,0 +1,103 @@
+---
+# Validates the control repo itself. Until this existed, nothing did: every check
+# below was run by hand, and a broken manifest would have reached `production`
+# and surfaced only as a failed catalog compile on a VM — after r10k had deployed
+# it and codavox had sealed it under a code_id.
+#
+# None of this replaces the audit suite in audit/, which needs real nodes and a
+# real CA. This catches the class of mistake that never needs a VM to find.
+name: CI
+
+on:
+  push:
+    branches: [production]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  manifests:
+    name: Manifests compile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: .ruby-version
+          bundler-cache: true
+
+      - name: puppet parser validate
+        run: |
+          # Syntax only, and fast. onceover below is the real check, but this
+          # names the file and line, which a failed catalog compile does not.
+          find manifests site-modules -name '*.pp' -print0 \
+            | xargs -0 bundle exec puppet parser validate
+
+      - name: onceover
+        # Compiles every role in spec/onceover.yaml against a node factset.
+        #
+        # It proves a role is valid, never that a node is classified into it —
+        # manifests/site.pp owns that, and the two are kept in agreement by hand.
+        # A role listed there with no matching node definition compiles clean
+        # forever while running on nothing.
+        run: bundle exec onceover run spec
+
+  hiera:
+    name: Hiera data parses
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: .ruby-version
+
+      - name: Every data file is valid YAML
+        # codavox rejects unknown keys outright, so a typo here is a daemon that
+        # will not start rather than a setting quietly ignored. Malformed YAML
+        # fails even earlier, and silently: Hiera returns the default and the
+        # node converges on something nobody asked for.
+        run: |
+          # Ruby's YAML rather than Python's: this repo already requires Ruby,
+          # and PyYAML is not guaranteed on a runner.
+          for f in data/*.yaml data/**/*.yaml hiera.yaml spec/onceover.yaml; do
+            [ -e "$f" ] || continue
+            ruby -ryaml -e 'YAML.safe_load_file(ARGV[0])' "$f" && echo "ok  $f"
+          done
+
+  shell:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Lint the audit suite
+        # These scripts commit to this repo and reboot nodes. A quoting mistake
+        # here is not a broken test, it is a destructive one.
+        #
+        # Warnings and above only. The suite is full of deliberate SC2016 infos:
+        # single-quoted commands are passed to `vagrant ssh -c` and must expand on
+        # the node, not here. Failing on those would mean either silencing them
+        # one by one or not running shellcheck at all.
+        run: shellcheck --severity=warning --external-sources audit/*.sh
+
+  markdown:
+    name: Markdown lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: DavidAnson/markdownlint-cli2-action@v24
+        with:
+          globs: '**/*.md'
+
+  spelling:
+    name: cspell
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: streetsidesoftware/cspell-action@v7
+        with:
+          files: '**/*.md'
+          incremental_files_only: false

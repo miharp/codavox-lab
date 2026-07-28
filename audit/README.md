@@ -42,7 +42,7 @@ evidence each check prints, not just the `ok`.
 The inverse happens too. A check can go red for a state the suite created on a
 previous run rather than a defect — `f-core.sh` revokes compiler02 and cannot
 un-revoke it, so on a second run that node is legitimately absent from the fleet
-view. F2 now recognises that case and says so instead of failing. A stale red
+view. F2 now recognizes that case and says so instead of failing. A stale red
 teaches you to ignore reds, which is worse than the failure it reports.
 
 `c-integrity.sh` also moves the CRL while the real publisher is running, which
