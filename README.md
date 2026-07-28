@@ -40,15 +40,27 @@ dnf overrides for it, and `puppetlabs/firewall` cannot persist rules there at al
 
 | node | IP | serves | gets code from |
 |---|---|---|---|
-| `puppet` | 192.168.57.10 | **no agents** | r10k, from `file:///vagrant-src/.git` |
+| `puppet` | 192.168.57.10 | itself only | r10k, then its own codavox agent |
 | `compiler01` | 192.168.57.11 | `agent01` | codavox agent |
 | `compiler02` | 192.168.57.12 | nothing yet | codavox agent |
 | `agent01` | 192.168.57.13 | — | `compiler01` |
 
-The primary serves no agents on purpose. That is how a real multi-compiler estate
-is laid out, and it keeps static catalogs purely a codavox property — no node here
-can produce a `code_id` by any other means, so there is nowhere for a wrong one to
-come from.
+The primary serves no *other* node's agent, on purpose. That is how a real
+multi-compiler estate is laid out, and it keeps static catalogs purely a codavox
+property — no node here can produce a `code_id` by any other means, so there is
+nowhere for a wrong one to come from.
+
+It does compile one catalog, though: its own. So it runs the full `codavox::primary`
+class — publisher, an agent pointed at that publisher, and the server wiring — and
+its own catalogs are versioned like everyone else's. Left publisher-only it would
+have been the single node in the estate without the guarantee the rest of this lab
+exists to demonstrate.
+
+That also means the primary takes **two Puppet runs** to converge from scratch:
+`codavox::primary` will not repoint `environmentpath` until the `codavox_environments`
+fact reports the environment converged, because a node that compiles its own
+catalog cannot repair itself afterwards. Vagrant provisioning does the two runs
+(and a third, so the primary's cached catalog is a static one).
 
 **Two compilers**, because one can only ever demonstrate convergence. Two can
 demonstrate divergence — see [Things worth trying](#things-worth-trying).
