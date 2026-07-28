@@ -28,15 +28,28 @@ codavox::package_source: 'https://github.com/miharp/codavox/releases/download/v0
 # symlink. PE moves its codedir for the same reason when versioned deploys are on.
 codavox::environmentpath: '/opt/puppetlabs/codavox/environments'
 
-# The publisher every compiler polls.
+# The publisher every agent polls, the primary's own included: it runs an agent
+# against itself so its own catalogs are versioned too. Named by certname rather
+# than localhost because the publisher presents this node's Puppet certificate.
 codavox::agent_publisher: 'https://puppet.example.com:8150'
 
 # Compilers are authorized by the pp_role in their certificate, written into
 # csr_attributes.yaml before enrolment. An estate whose compiler certificates
 # predate codavox would list them under codavox::publish_allow_certnames instead,
 # since pp_role cannot be added to an already-issued certificate.
+#
+# The primary is NOT listed here even though it polls this publisher. It carries
+# pp_role openvox_server, and the publisher admits its own certname regardless —
+# that node already holds the basedir in plaintext on local disk, so admitting it
+# grants nothing. This list stays a statement about compilers.
 codavox::publish_allow_roles:
   - 'openvox_compiler'
+
+# profile::openvox_server declares Service['puppetserver'] with attributes of its
+# own, so codavox must not declare it again. It notifies that declaration through
+# a resource collector instead. Applies to every node running OpenVox Server,
+# which is now the primary as well as the compilers.
+codavox::server::service_manage: false
 
 # Poll faster than the 30s default so the lab is quick to observe. Production has
 # no reason to: a converged fleet polls constantly and fetches nothing.

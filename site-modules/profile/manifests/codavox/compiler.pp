@@ -26,11 +26,11 @@ class profile::codavox::compiler (
   include codavox::agent
 
   if $wire_server {
-    # profile::openvox_server already declares the service with attributes of its
-    # own, so codavox must not declare it again. It notifies that declaration
-    # through a resource collector instead.
-    class { 'codavox::server':
-      service_manage => false,
-    }
+    # service_manage is false in Hiera for every node running OpenVox Server,
+    # because profile::openvox_server declares the service itself. Set there
+    # rather than here so codavox::server keeps its own automatic parameter
+    # lookup, and so the primary — which reaches the class through
+    # codavox::primary and cannot pass parameters to it — gets the same value.
+    include codavox::server
   }
 }

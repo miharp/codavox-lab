@@ -1,3 +1,9 @@
 # r10k installs Puppetfile modules here.
 modules/
 .vagrant/
+
+# onceover builds a throwaway control repo here, a full copy of this one. It was
+# removed once already and came straight back on the next `git add -A`, because
+# nothing ignored it — and r10k then deploys it, so codavox seals a stale
+# duplicate of the whole repo into every artifact.
+.onceover/

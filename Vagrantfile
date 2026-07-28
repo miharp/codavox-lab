@@ -182,8 +182,26 @@ EOF
       echo "[primary] deploying environments with r10k"
       /opt/puppetlabs/puppet/bin/r10k deploy environment -v -p
 
-      # Converge the primary itself: this installs codavox and starts the
-      # publisher, which seals what r10k just deployed.
+      # Converge the primary itself. This installs codavox and starts the
+      # publisher, which seals what r10k just deployed, and the agent, which
+      # polls that publisher — this node compiles its own catalog, so it wants
+      # versioned code like any compiler.
+      #
+      # It deliberately does NOT wire OpenVox Server yet. codavox::primary gates
+      # that on the codavox_environments fact, because repointing environmentpath
+      # at a directory the agent has not filled would stop catalog compilation on
+      # the one node that cannot be repaired by Puppet afterwards.
+      /opt/puppetlabs/bin/puppet agent -t --waitforlock 60 || true
+
+      # Give the agent a poll to converge, then run again. The fact now reports
+      # production, so this run does the wiring. Two runs is the real behavior of
+      # a staged cutover, not a lab workaround — an estate applying this to a
+      # live primary sees exactly the same sequence.
+      echo "[primary] waiting for the agent to converge before wiring the server"
+      for _ in $(seq 1 30); do
+        /usr/bin/codavox code-id production >/dev/null 2>&1 && break
+        sleep 2
+      done
       /opt/puppetlabs/bin/puppet agent -t --waitforlock 60 || true
 
       # The agent is left off on every node. This is a lab for watching specific
@@ -192,6 +210,7 @@ EOF
       systemctl disable --now puppet 2>/dev/null || true
 
       echo "[primary] serving:"
+      /usr/bin/codavox code-id production 2>/dev/null || echo "  (not converged)"
       /usr/bin/codavox compilers 2>/dev/null || true
       journalctl -u codavox-publish --no-pager -n 3 || true
     SHELL

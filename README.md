@@ -216,6 +216,6 @@ anything, which is a mistake that has already been made once.
 | `Puppetfile` | four modules, including `codavox` pinned by tag |
 | `manifests/site.pp` | node definitions; keep in step with onceover |
 | `data/` | Hiera; all `codavox::*` settings live here |
-| `site-modules/profile/` | `base`, `openvox_server`, `codavox::publisher`, `codavox::compiler` |
+| `site-modules/profile/` | `base`, `openvox_server`, `codavox::primary`, `codavox::compiler` |
 | `site-modules/role/` | `primary`, `compiler`, `agent` |
 | `scripts/deploy` | deploy, reseal, and optionally wait for the fleet |
