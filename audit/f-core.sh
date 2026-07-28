@@ -174,8 +174,18 @@ if printf '%s' "$out" | grep -qi "allow-role"; then ok "refused, naming the flag
 
 hdr "F12. revocation still takes effect on the next poll"
 vm puppet 'sudo /opt/puppetlabs/bin/puppetserver ca revoke --certname compiler02.example.com >/dev/null 2>&1'
-sed -i '' "s/^profile::base::marker_content: .*/profile::base::marker_content: 'post-audit'/" data/common.yaml
-git commit -aqm "regression: post-audit deploy" >/dev/null 2>&1 || true
+# A unique value, and only this file committed. The old version wrote a fixed
+# string and used `git commit -a`, which failed twice over on a rerun: the marker
+# was already that string so the commit was empty, and `-a` swept up whatever else
+# happened to be modified in the working tree. On the run that caught this, an
+# unrelated Vagrantfile edit was the only thing that changed the tree — so the
+# deploy below produced a new code_id by accident, and this check passed without
+# testing anything.
+marker="post-audit-$(date +%s)"
+sed -i '' "s/^profile::base::marker_content: .*/profile::base::marker_content: '${marker}'/" data/common.yaml
+if ! git commit -qm "regression: ${marker} deploy" -- data/common.yaml; then
+  bad "the marker commit was empty, so the deploy below proves nothing"
+fi
 vm puppet 'sudo /opt/puppetlabs/puppet/bin/r10k deploy environment production -p >/dev/null 2>&1; sudo systemctl reload codavox-publish'
 sleep 35
 c1=$(vm compiler01 'codavox code-id production'); c2=$(vm compiler02 'codavox code-id production')
