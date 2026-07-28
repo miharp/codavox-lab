@@ -18,6 +18,16 @@ Run them against a lab that is already up and converged
 | `f-core.sh` | **host** | the core suite plus regressions for #47, #48, #49, #55, #56 |
 | `g-deploy.sh` | primary | `codavox deploy`, and `deploy-server` token auth and history |
 
+Use the runner, which knows which batch goes where and records what happened:
+
+```console
+bash audit/run.sh          # every batch, in order
+bash audit/run.sh f        # one batch
+bash audit/run.sh e f      # several
+```
+
+Or invoke a batch directly, if you would rather not record the run:
+
 ```console
 # on the primary
 vagrant ssh puppet -c 'sudo bash -s' < audit/c-integrity.sh
@@ -25,6 +35,28 @@ vagrant ssh puppet -c 'sudo bash -s' < audit/c-integrity.sh
 # from the host
 bash audit/f-core.sh
 ```
+
+## The record
+
+`audit/run.sh` appends one JSON line per check to `audit/results.jsonl` and
+commits it, carrying the codavox version and the repo commit the run happened
+against. It stores the **evidence** each check printed, not just the verdict,
+because the verdict is the part that lies.
+
+That is what makes the failure mode below detectable across runs rather than
+only by reading the script. After each run it reports any check whose evidence
+is byte-identical to the previous run. For a static assertion that is expected —
+`B3: refused` should never change. For a check that claims something *moved*, it
+is the signature of one that has stopped testing anything:
+
+```console
+jq -r 'select(.check=="F12") | "\(.run) \(.detail)"' audit/results.jsonl
+```
+
+The batches refuse to start when the working tree is dirty. They commit to this
+repo to trigger deploys, and `git commit` takes what it is given — an unrelated
+edit was once committed under a batch's message, and was also the only reason a
+check went green.
 
 ## Two things to know before trusting a green run
 
