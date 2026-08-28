@@ -15,4 +15,4 @@ mod 'puppetlabs/yumrepo_core', '3.0.1'
 # module non-deterministically would undercut the point.
 mod 'codavox',
   git: 'https://github.com/miharp/puppet-codavox.git',
-  tag: 'v0.3.0'
+  tag: 'v0.4.0'

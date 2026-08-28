@@ -242,6 +242,57 @@ else
 fi
 vm puppet 'sudo bash -c "rm -rf /etc/puppetlabs/code/environments/feature_my_branch /etc/puppetlabs/code/environments/.hidden-audit; systemctl reload codavox-publish"'
 
+# compiler01 holds its environment cache forever (environment_timeout =
+# unlimited, in common.yaml), so the symlink swap alone changes nothing it
+# compiles: only the agent's flush after the swap does. A catalog compiled
+# from the old tree would still be stamped with the new code_id — F4 above
+# cannot tell the difference, which is why this deploys real content and looks
+# for it. codavox's own harness reproduces the stale catalog with the flush
+# switched off; here the question is whether the module wired the rule and the
+# flush lands on a real estate.
+hdr "F14. #83: a deploy reaches a compiler that holds its environment cache"
+timeout=$(vm compiler01 'sudo grep "^environment_timeout" /etc/puppetlabs/puppet/puppet.conf | sed "s/.*= *//"')
+if [ "$timeout" = "unlimited" ]; then
+  ok "compiler01 holds its environment cache (environment_timeout = unlimited)"
+else
+  bad "environment_timeout is '${timeout:-unset}' on compiler01, so this check would pass without a flush"
+fi
+if vm compiler01 'sudo grep -q "codavox environment cache flush" /etc/puppetlabs/puppetserver/conf.d/auth.conf'; then
+  ok "the module wrote the auth.conf rule"
+else
+  bad "no codavox rule in compiler01's auth.conf"
+fi
+# Prime the cache, then move the marker and follow it into agent01's catalog.
+vm agent01 'sudo /opt/puppetlabs/bin/puppet agent -t >/dev/null 2>&1'
+before=$(vm compiler01 'codavox code-id production')
+marker="cache-flush-$(date +%s)"
+sed -i '' "s/^profile::base::marker_content: .*/profile::base::marker_content: '${marker}'/" data/common.yaml
+if ! git commit -qm "regression: ${marker} deploy" -- data/common.yaml; then
+  bad "the marker commit was empty, so the deploy below proves nothing"
+fi
+vm puppet 'sudo /opt/puppetlabs/puppet/bin/r10k deploy environment production -p >/dev/null 2>&1; sudo systemctl reload codavox-publish'
+for _ in $(seq 1 12); do sleep 5; after=$(vm compiler01 'codavox code-id production'); [ "$after" != "$before" ] && break; done
+if [ "$after" != "$before" ]; then
+  ok "compiler01 moved ${before:0:12} -> ${after:0:12}"
+else
+  bad "compiler01 never converged on the marker deploy"
+fi
+vm agent01 'sudo /opt/puppetlabs/bin/puppet agent -t >/dev/null 2>&1'
+cat_id=$(vm agent01 'sudo grep -o "\"code_id\":\"[^\"]*\"" /opt/puppetlabs/puppet/cache/client_data/catalog/agent01.example.com.json | head -1 | sed "s/.*:\"//;s/\"//"')
+if vm agent01 "sudo grep -q '${marker}' /opt/puppetlabs/puppet/cache/client_data/catalog/agent01.example.com.json"; then
+  ok "agent01's catalog carries ${marker}, stamped ${cat_id:0:12}"
+elif [ "$cat_id" = "$after" ]; then
+  bad "the catalog is stamped ${cat_id:0:12} but compiled from the old tree — the cache was not expired"
+else
+  bad "the catalog is stamped ${cat_id:0:12}, compiler01 serves ${after:0:12}, and the marker is missing"
+fi
+if vm compiler01 'sudo journalctl -u codavox-agent --since "3 min ago" --no-pager' | grep -q "environment cache flushed"; then
+  ok "compiler01's agent logged the flush"
+else
+  bad "no 'environment cache flushed' in compiler01's journal"
+  vm compiler01 'sudo journalctl -u codavox-agent --since "3 min ago" --no-pager | grep -i "flush" | tail -3' | sed 's/^/     /'
+fi
+
 echo
 vm puppet 'sudo codavox compilers' | sed 's/^/     /'
 echo

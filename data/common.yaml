@@ -20,7 +20,7 @@ profile::base::marker_content: 'post-audit'
 # version and an arch fact: a URL a profile builds is a URL nobody can grep for.
 # Every VM here is aarch64 (Apple silicon); another architecture overrides this in
 # data/nodes/<certname>.yaml.
-codavox::package_source: 'https://github.com/miharp/codavox/releases/download/v0.6.2/codavox_0.6.2_linux_arm64.rpm'
+codavox::package_source: 'https://github.com/miharp/codavox/releases/download/v0.7.0/codavox_0.7.0_linux_arm64.rpm'
 
 # Where the agent deploys code and code-id reads from. Deliberately not the stock
 # /etc/puppetlabs/code/environments: a fresh OpenVox Server ships a populated
@@ -50,6 +50,14 @@ codavox::publish_allow_roles:
 # a resource collector instead. Applies to every node running OpenVox Server,
 # which is now the primary as well as the compilers.
 codavox::server::service_manage: false
+
+# Hold the environment cache forever, as a production compiler does for compile
+# speed. From codavox 0.7 this is safe: the agent expires the environment it
+# swapped from the server's cache, and puppet-codavox 0.4 writes the auth.conf
+# rule that allows it. At the default of 0 the server re-reads the environment
+# on every compile, and a missing flush would never show — so the lab holds the
+# cache precisely to make a broken flush visible (audit F14).
+codavox::server::environment_timeout: unlimited
 
 # Poll faster than the 30s default so the lab is quick to observe. Production has
 # no reason to: a converged fleet polls constantly and fetches nothing.
