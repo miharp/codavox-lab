@@ -73,8 +73,14 @@ version_pin() {
   sed -n 's|.*/download/v\([0-9.]*\)/.*|\1|p' data/common.yaml | head -1
 }
 
+# Rows are buffered outside the tree until every batch has run. Appending to
+# results.jsonl per batch dirtied the tree after the first one, and the host
+# batches refuse a dirty tree — so e, f, and h never ran from the runner and
+# were recorded as "no output", which read as a failure of theirs rather than
+# of this script.
 log=$(mktemp)
-trap 'rm -f "$log"' EXIT
+buffer=$(mktemp)
+trap 'rm -f "$log" "$buffer"' EXIT
 
 overall=0
 for b in $requested; do
@@ -96,7 +102,7 @@ for b in $requested; do
   # Parsing the printed output rather than instrumenting seven scripts. The
   # format is theirs and stable: "  ok   msg", "  FAIL msg", "==> F3. title".
   RUN_ID="$RUN_ID" BATCH="$b" PIN="$pin" COMMIT="$commit" RC="$rc" \
-  LOG="$log" RESULTS="$RESULTS" python3 - <<'PY'
+  LOG="$log" RESULTS="$buffer" python3 - <<'PY'
 import json, os, re
 
 ansi = re.compile(r'\x1b\[[0-9;]*m')
@@ -143,6 +149,8 @@ f = sum(1 for r in rows if r['status'] != 'pass')
 print(f"\n  recorded {len(rows)} checks: {p} pass, {f} not")
 PY
 done
+
+cat "$buffer" >> "$RESULTS"
 
 printf '\n\033[1;35m######\033[0m run %s\n' "$RUN_ID"
 RUN_ID="$RUN_ID" RESULTS="$RESULTS" python3 - <<'PY'
