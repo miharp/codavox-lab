@@ -154,3 +154,22 @@
 {"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "eb8250c", "detail": "publisher no longer advertises audit_h7", "run": "2026-09-02T14:57:28Z", "status": "pass"}
 {"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "eb8250c", "detail": "compiler01 (prune on) removed audit_h7", "run": "2026-09-02T14:57:28Z", "status": "pass"}
 {"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "eb8250c", "detail": "compiler02 removed audit_h7 without being told to prune", "run": "2026-09-02T14:57:28Z", "status": "fail"}
+{"batch": "h", "check": "H1", "codavox": "0.8.0", "commit": "5c49563", "detail": "primary config carries r10k_timeout: 5m", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H1", "codavox": "0.8.0", "commit": "5c49563", "detail": "primary config carries agent.max_unpacked: 1G", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H1", "codavox": "0.8.0", "commit": "5c49563", "detail": "compiler01 config carries agent.max_unpacked: 1G", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H2", "codavox": "0.8.0", "commit": "5c49563", "detail": "exit 0, production reported deployed", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H3", "codavox": "0.8.0", "commit": "5c49563", "detail": "exit 1: not in production's Puppetfile: nosuchmodule", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H4", "codavox": "0.8.0", "commit": "5c49563", "detail": "exit 1 with the hint", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H5", "codavox": "0.8.0", "commit": "5c49563", "detail": "exit 1 after 4s: r10k deploy timed out after 2s", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H5", "codavox": "0.8.0", "commit": "5c49563", "detail": "gave up promptly (4s)", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H5", "codavox": "0.8.0", "commit": "5c49563", "detail": "r10k's child 15233 is gone (process group signaled)", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H6", "codavox": "0.8.0", "commit": "5c49563", "detail": "refused: refusing archive that expands past 4096 bytes at .gitignore", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H6", "codavox": "0.8.0", "commit": "5c49563", "detail": "nothing installed under the scratch root", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "deploy --all staged audit_h7", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "compiler01 and the primary's own agent serve audit_h7", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "webhook accepted the deletion (202)", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "history shows a complete all-deploy with reason 'branch for audit_h7 deleted'", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "the deploy reports only what remains: production", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "publisher no longer advertises audit_h7", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "compiler01 (prune on) removed audit_h7", "run": "2026-09-02T15:11:23Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "5c49563", "detail": "the primary's agent (prune off) still serves it, as documented", "run": "2026-09-02T15:11:23Z", "status": "pass"}
