@@ -51,7 +51,13 @@ commit=$(git -C "$src" rev-parse --short HEAD 2>/dev/null || echo unknown)
 install -d dist
 cp "$rpm" dist/codavox_snapshot_linux_arm64.rpm
 printf '%s %s\n' "$version" "$commit" > dist/VERSION
-sed -i '' "s|^codavox::package_source: .*|codavox::package_source: '/vagrant-src/dist/codavox_snapshot_linux_arm64.rpm'|" data/common.yaml
+# A package_source replaces the repository pin: the rpm provider installs
+# the file, and its version is whatever the file holds.
+if grep -q '^codavox::package_ensure:' data/common.yaml; then
+  sed -i '' "s|^codavox::package_ensure: .*|codavox::package_source: '/vagrant-src/dist/codavox_snapshot_linux_arm64.rpm'|" data/common.yaml
+else
+  sed -i '' "s|^codavox::package_source: .*|codavox::package_source: '/vagrant-src/dist/codavox_snapshot_linux_arm64.rpm'|" data/common.yaml
+fi
 
 git commit -qm "lab: run against codavox snapshot $version ($commit)" -- data/common.yaml
 echo "==> dist/codavox_snapshot_linux_arm64.rpm is $version from codavox $commit"

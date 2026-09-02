@@ -23,4 +23,4 @@ mod 'puppetlabs/concat',               '10.0.1'
 # module non-deterministically would undercut the point.
 mod 'codavox',
   git: 'https://github.com/miharp/puppet-codavox.git',
-  tag: 'v0.5.0'
+  tag: 'v0.6.0'

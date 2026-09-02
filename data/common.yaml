@@ -15,12 +15,11 @@ profile::base::marker_content: 'cache-flush-1788364455'
 # resolves one consistent `codavox` class rather than declaring it twice with
 # different data.
 
-# codavox has no package repository yet (miharp/codavox#42), so the package comes
-# straight from a release asset. A literal rather than a URL assembled from a
-# version and an arch fact: a URL a profile builds is a URL nobody can grep for.
-# Every VM here is aarch64 (Apple silicon); another architecture overrides this in
-# data/nodes/<certname>.yaml.
-codavox::package_source: 'https://github.com/miharp/codavox/releases/download/v0.8.0/codavox_0.8.0_linux_arm64.rpm'
+# codavox installs from the harpworks package repository, which puppet-codavox
+# 0.6 configures by default, so the pin is a version and the package manager
+# picks the architecture. scripts/use-release sets this; scripts/use-snapshot
+# replaces it with a package_source pointing at a locally built rpm.
+codavox::package_ensure: '0.8.0'
 
 # Where the agent deploys code and code-id reads from. Deliberately not the stock
 # /etc/puppetlabs/code/environments: a fresh OpenVox Server ships a populated

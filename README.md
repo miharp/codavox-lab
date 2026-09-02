@@ -104,8 +104,9 @@ same one its `code-id` reads.
 
 ## Testing codavox before it is released
 
-The pin in `data/common.yaml` is normally a release URL, which means the audit
-suite can only run against something already tagged — and the first time it
+The pin in `data/common.yaml` is normally a release version, installed from
+the harpworks package repository, which means the audit suite can only run
+against something already tagged — and the first time it
 ran against v0.6.0 it found a release blocker. To run it against `main`
 instead, build a snapshot and install from it:
 
