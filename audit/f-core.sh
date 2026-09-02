@@ -29,8 +29,11 @@ vm()  { vagrant ssh "$1" -c "$2" 2>/dev/null | tr -d '\r'; }
 
 # Taken from Hiera rather than written here twice. The literal drifted once
 # already: the pin moved to 0.6.2 while this batch still asserted 0.6.1, so the
-# suite was checking a version the lab had stopped installing.
-WANT=$(sed -n 's|.*/download/v\([0-9.]*\)/.*|\1|p' data/common.yaml | head -1)
+# suite was checking a version the lab had stopped installing. A snapshot pin
+# reports its own version the same way.
+# shellcheck source=audit/lib.sh
+. audit/lib.sh
+WANT=$(lab_version)
 
 hdr "F1. version actually under test (Hiera pins $WANT)"
 for h in puppet compiler01 compiler02; do

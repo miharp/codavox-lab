@@ -102,6 +102,26 @@ compiler02.example.com  production   3224ddbe7e3d  a3f1c9e4b2d8  7s ago
 Both on one `code_id`, each reporting it from its own environment symlink — the
 same one its `code-id` reads.
 
+## Testing codavox before it is released
+
+The pin in `data/common.yaml` is normally a release URL, which means the audit
+suite can only run against something already tagged — and the first time it
+ran against v0.6.0 it found a release blocker. To run it against `main`
+instead, build a snapshot and install from it:
+
+```console
+./scripts/use-snapshot          # builds ~/projects/codavox with goreleaser, commits the pin
+vagrant destroy -f && vagrant up
+bash audit/run.sh
+./scripts/use-release 0.8.0     # back to a published release
+```
+
+The package goes to `dist/`, ignored, and the nodes install it from the synced
+mount. `dist/VERSION` records the snapshot's version and the codavox commit it
+came from, and the audit record carries both, so a run against unreleased code
+is labelled as such. Fresh VMs each time: the module installs the package and
+does not upgrade it.
+
 ## How this maps to the guide
 
 | guide step | here |
@@ -231,3 +251,5 @@ anything, which is a mistake that has already been made once.
 | `site-modules/profile/` | `base`, `openvox_server`, `codavox::primary`, `codavox::compiler` |
 | `site-modules/role/` | `primary`, `compiler`, `agent` |
 | `scripts/deploy` | deploy, reseal, and optionally wait for the fleet |
+| `scripts/use-snapshot`, `scripts/use-release` | switch the pin between a locally built snapshot and a release |
+| `dist/` | ignored; the snapshot package and its `VERSION`, when one is in use |

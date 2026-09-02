@@ -36,6 +36,7 @@
     "factsets",
     "firewalld",
     "gencrl",
+    "goreleaser",
     "Hiera",
     "hiera",
     "inifile",

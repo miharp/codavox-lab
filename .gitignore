@@ -7,3 +7,7 @@ modules/
 # nothing ignored it — and r10k then deploys it, so codavox seals a stale
 # duplicate of the whole repo into every artifact.
 .onceover/
+
+# A snapshot package placed by scripts/use-snapshot, installed from the synced
+# mount. The pin in data/common.yaml says whether it is in use.
+dist/

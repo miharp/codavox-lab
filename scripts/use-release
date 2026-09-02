@@ -1,0 +1,27 @@
+#!/bin/bash
+# Point the lab back at a published codavox release.
+#
+#   ./scripts/use-release 0.8.0
+#
+# The counterpart of scripts/use-snapshot. Commits the pin; then
+# `vagrant destroy -f && vagrant up`, since the module installs but does not
+# upgrade.
+set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
+cd "$here/.." || exit 1
+
+version="${1:?usage: use-release <version>, e.g. 0.8.0}"
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "refusing: the working tree has uncommitted changes; this script commits." >&2
+  exit 1
+fi
+url="https://github.com/miharp/codavox/releases/download/v${version}/codavox_${version}_linux_arm64.rpm"
+if ! curl -sfIL -o /dev/null "$url"; then
+  echo "no such release asset: $url" >&2
+  exit 1
+fi
+sed -i '' "s|^codavox::package_source: .*|codavox::package_source: '$url'|" data/common.yaml
+rm -f dist/VERSION
+git commit -qm "lab: run against codavox release $version" -- data/common.yaml
+echo "==> pinned to $url"
+echo "==> committed; now: vagrant destroy -f && vagrant up"

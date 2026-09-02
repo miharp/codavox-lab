@@ -1,0 +1,58 @@
+#!/bin/bash
+# Point the lab at an unreleased codavox: build a snapshot package from a
+# checkout and install from it, so the audit suite runs against main before a
+# tag exists rather than after one.
+#
+#   ./scripts/use-snapshot                     # build ~/projects/codavox as it is
+#   ./scripts/use-snapshot --rpm path/to.rpm   # use a package already built
+#   CODAVOX_SRC=/elsewhere ./scripts/use-snapshot
+#
+# The package lands in dist/ (ignored) at a fixed name, dist/VERSION records
+# what it is, and codavox::package_source is committed pointing at it — the
+# nodes install from the synced mount, and only committed data reaches them.
+# Then `vagrant destroy -f && vagrant up`: the module installs, it does not
+# upgrade, so a new package means new VMs. Return with scripts/use-release.
+set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
+cd "$here/.." || exit 1
+
+src="${CODAVOX_SRC:-$HOME/projects/codavox}"
+rpm=""
+if [ "${1:-}" = "--rpm" ]; then
+  rpm="${2:?--rpm needs a path}"
+fi
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  echo "refusing: the working tree has uncommitted changes; this script commits." >&2
+  exit 1
+fi
+
+if [ -z "$rpm" ]; then
+  [ -d "$src/.git" ] || { echo "no codavox checkout at $src (set CODAVOX_SRC)" >&2; exit 1; }
+  echo "==> building a snapshot from $src ($(git -C "$src" rev-parse --short HEAD))"
+  (
+    cd "$src"
+    if command -v goreleaser >/dev/null; then
+      goreleaser release --snapshot --clean --skip=publish >/dev/null
+    else
+      go run github.com/goreleaser/goreleaser/v2@latest release --snapshot --clean --skip=publish >/dev/null
+    fi
+  )
+  for f in "$src"/dist/codavox_*_linux_arm64.rpm; do rpm="$f"; break; done
+fi
+[ -f "$rpm" ] || { echo "no arm64 rpm at $rpm" >&2; exit 1; }
+
+# The version the binary will report, read from the package rather than guessed
+# from the filename, and the commit it came from, for the audit record.
+version=$(basename "$rpm" | sed -n 's/^codavox_\(.*\)_linux_arm64\.rpm$/\1/p')
+commit=$(git -C "$src" rev-parse --short HEAD 2>/dev/null || echo unknown)
+[ -n "$version" ] || { echo "cannot read a version from $(basename "$rpm")" >&2; exit 1; }
+
+install -d dist
+cp "$rpm" dist/codavox_snapshot_linux_arm64.rpm
+printf '%s %s\n' "$version" "$commit" > dist/VERSION
+sed -i '' "s|^codavox::package_source: .*|codavox::package_source: '/vagrant-src/dist/codavox_snapshot_linux_arm64.rpm'|" data/common.yaml
+
+git commit -qm "lab: run against codavox snapshot $version ($commit)" -- data/common.yaml
+echo "==> dist/codavox_snapshot_linux_arm64.rpm is $version from codavox $commit"
+echo "==> committed; now: vagrant destroy -f && vagrant up, then bash audit/run.sh"

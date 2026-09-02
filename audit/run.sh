@@ -69,9 +69,9 @@ done
 
 # Recorded per batch rather than once: the batches commit, so HEAD moves under us
 # and a single run-level commit would misattribute later batches.
-version_pin() {
-  sed -n 's|.*/download/v\([0-9.]*\)/.*|\1|p' data/common.yaml | head -1
-}
+# shellcheck source=audit/lib.sh
+. audit/lib.sh
+version_pin() { lab_version_label; }
 
 # Rows are buffered outside the tree until every batch has run. Appending to
 # results.jsonl per batch dirtied the tree after the first one, and the host
