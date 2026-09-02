@@ -7,7 +7,7 @@ profile::openvox_server::version: '8.15.1'
 # Written to /etc/codavox-lab-marker on every node. Change this, commit, deploy,
 # and reseal to watch a code change travel all the way to an applied resource —
 # not just to a new code_id.
-profile::base::marker_content: 'simultaneous'
+profile::base::marker_content: 'post-audit-1788364379'
 
 # --- codavox --------------------------------------------------------------
 #
