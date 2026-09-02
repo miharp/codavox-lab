@@ -5,3 +5,8 @@
 # codavox is designed around, with no extra staging step to arrange.
 codavox::basedir: '/etc/puppetlabs/code/environments'
 codavox::publish_listen: ':8150'
+
+# Bound on each r10k run (codavox 0.8, module 0.5.0). Set below the default so
+# audit H1 can prove the module wrote it through, not just that codavox has a
+# default; the lab's file:// deploys finish in seconds either way.
+codavox::r10k_timeout: '5m'

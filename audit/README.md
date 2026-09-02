@@ -17,6 +17,7 @@ Run them against a lab that is already up and converged
 | `e-concurrency.sh` | **host** | rapid reseals, `SIGKILL` mid-sync, an in-flight download whose artifact is reaped, simultaneous fetches |
 | `f-core.sh` | **host** | the core suite plus regressions for #47, #48, #49, #55, #56 |
 | `g-deploy.sh` | primary | `codavox deploy`, and `deploy-server` token auth and history |
+| `h-release-0.8.sh` | **host** | 0.8: module passthroughs, `--modules`, the r10k timeout, the extraction cap, and a webhook branch deletion purged end to end |
 
 Use the runner, which knows which batch goes where and records what happened:
 

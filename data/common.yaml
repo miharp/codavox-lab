@@ -62,3 +62,8 @@ codavox::server::environment_timeout: unlimited
 # Poll faster than the 30s default so the lab is quick to observe. Production has
 # no reason to: a converged fleet polls constantly and fetches nothing.
 codavox::agent_interval: '10s'
+
+# Most one artifact may expand to on a compiler (codavox 0.8, module 0.5.0).
+# Set below the 2 GiB default so audit H1 can prove the passthrough; the lab's
+# environment unpacks to a few megabytes, so this changes nothing in practice.
+codavox::agent_max_unpacked: '1G'
