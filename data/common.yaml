@@ -20,7 +20,7 @@ profile::base::marker_content: 'cache-flush-1788361550'
 # version and an arch fact: a URL a profile builds is a URL nobody can grep for.
 # Every VM here is aarch64 (Apple silicon); another architecture overrides this in
 # data/nodes/<certname>.yaml.
-codavox::package_source: 'https://github.com/miharp/codavox/releases/download/v0.8.0/codavox_0.8.0_linux_arm64.rpm'
+codavox::package_source: '/vagrant-src/dist/codavox_snapshot_linux_arm64.rpm'
 
 # Where the agent deploys code and code-id reads from. Deliberately not the stock
 # /etc/puppetlabs/code/environments: a fresh OpenVox Server ships a populated
