@@ -6,8 +6,12 @@
 # publisher, and two real compilers, which is the only place the deletion path
 # can be shown to purge an environment the whole way to a pruning compiler.
 #
-# Run from the host: H6 creates and deletes a branch in this repo, which is
+# Run from the host: H7 creates and deletes a branch in this repo, which is
 # r10k's remote, and the synced mount is read-only from inside the VMs.
+#
+# Batch F leaves compiler02 revoked on purpose, so H7 proves the pull side on
+# compiler01 (prune on) and on the primary's own agent (prune off), not on
+# compiler02.
 set -uo pipefail
 cd /Users/michaelharp/projects/codavox-lab || exit 1
 
@@ -127,26 +131,28 @@ fi
 vm puppet 'sudo rm -rf /tmp/audit-h6' >/dev/null
 
 hdr "H7. a branch deleted at the webhook is purged from the primary and pruned on compiler01"
-# A real branch, so r10k stages a real environment and both compilers pick it
-# up before it goes. The name maps to audit_h7 the way r10k sanitizes it.
+# A real branch, so r10k stages a real environment and the agents pick it up
+# before it goes. The name maps to audit_h7 the way r10k sanitizes it. The
+# primary's agent does not prune, so a previous run leaves its link behind;
+# clear it so the pickup below is proven fresh rather than inherited.
 git branch -D audit-h7 >/dev/null 2>&1 || true
 git branch audit-h7 >/dev/null
+vm puppet 'sudo rm -f /opt/puppetlabs/codavox/environments/audit_h7' >/dev/null
 out=$(vm puppet 'sudo codavox deploy --all 2>&1; echo "rc=$?"')
-if printf '%s' "$out" | grep -q '^audit_h7 .*deployed'; then
+if printf '%s\n' "$out" | grep -qE '^audit_h7[[:space:]]+deployed'; then
   ok "deploy --all staged audit_h7"
 else
-  bad "audit_h7 not deployed: $(printf '%s' "$out" | head -3 | tr '\n' ' ')"
+  bad "audit_h7 not deployed: $(printf '%s' "$out" | grep -v '^WARN' | head -3 | tr '\n' ' ')"
 fi
+serves() { vm "$1" 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$'; }
 for _ in $(seq 1 12); do
-  vm compiler01 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$' && \
-  vm compiler02 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$' && break
+  serves compiler01 && serves puppet && break
   sleep 5
 done
-if vm compiler01 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$' && \
-   vm compiler02 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$'; then
-  ok "both compilers serve audit_h7"
+if serves compiler01 && serves puppet; then
+  ok "compiler01 and the primary's own agent serve audit_h7"
 else
-  bad "compilers never picked audit_h7 up"
+  bad "agents never picked audit_h7 up"
 fi
 
 # A deploy server with both front doors: the webhook takes the deletion, the
@@ -172,21 +178,24 @@ for _ in $(seq 1 60); do
 import json,sys
 for r in json.load(sys.stdin):
     if r.get("source")=="webhook" and r.get("all"):
-        print(r.get("status"), "|", r.get("reason",""), "|", " ".join(r.get("environments") or []))
+        print(r.get("status"), r.get("reason",""), ",".join(r.get("environments") or []), sep="|")
         break' 2>/dev/null)
   case "$rec" in complete*|failed*) break ;; esac
   sleep 5
 done
 printf '     record: %s\n' "${rec:-none}"
-case "$rec" in
-  "complete | branch for audit_h7 deleted |"*) ok "history shows a complete all-deploy with reason 'branch for audit_h7 deleted'" ;;
-  *) bad "no complete webhook all-deploy in history" ;;
-esac
-if printf '%s' "$rec" | grep -q ' audit_h7'; then
-  bad "the deploy still reports audit_h7 among what remains"
+status=$(printf '%s' "$rec" | cut -d'|' -f1)
+reason=$(printf '%s' "$rec" | cut -d'|' -f2)
+remaining=$(printf '%s' "$rec" | cut -d'|' -f3)
+if [ "$status" = "complete" ] && [ "$reason" = "branch for audit_h7 deleted" ]; then
+  ok "history shows a complete all-deploy with reason '$reason'"
 else
-  ok "the deploy reports only what remains"
+  bad "no complete webhook all-deploy in history"
 fi
+case ",$remaining," in
+  *,audit_h7,*) bad "the deploy still reports audit_h7 among what remains: $remaining" ;;
+  *) ok "the deploy reports only what remains: $remaining" ;;
+esac
 
 adv=$(advertised)
 if printf '%s' "$adv" | grep -q '"audit_h7"'; then
@@ -196,20 +205,20 @@ else
 fi
 
 for _ in $(seq 1 12); do
-  vm compiler01 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$' || break
+  serves compiler01 || break
   sleep 5
 done
-if vm compiler01 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$'; then
+if serves compiler01; then
   bad "compiler01 (prune on) still serves audit_h7"
 else
   ok "compiler01 (prune on) removed audit_h7"
 fi
-if vm compiler02 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_h7$'; then
-  ok "compiler02 (prune off) still serves it, as documented"
+if serves puppet; then
+  ok "the primary's agent (prune off) still serves it, as documented"
 else
-  bad "compiler02 removed audit_h7 without being told to prune"
+  bad "the primary's agent removed audit_h7 without being told to prune"
 fi
 
-vm puppet 'sudo pkill -f "codavox deploy-server" ; sudo rm -f /etc/codavox/audit-api.token /etc/codavox/audit-webhook.secret' >/dev/null 2>&1
+vm puppet 'sudo pkill -f "codavox deploy-server" ; sudo rm -f /etc/codavox/audit-api.token /etc/codavox/audit-webhook.secret /opt/puppetlabs/codavox/environments/audit_h7' >/dev/null 2>&1
 
 exit "$FAILED"
