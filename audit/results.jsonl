@@ -51,3 +51,49 @@
 {"batch": "f", "check": "F14", "codavox": "0.7.0", "commit": "f5a64a9", "detail": "compiler01 moved edfbdb007832 -> 509f549f0521", "run": "2026-08-28T16:39:13Z", "status": "pass"}
 {"batch": "f", "check": "F14", "codavox": "0.7.0", "commit": "f5a64a9", "detail": "agent01's catalog carries cache-flush-1787935509, stamped 509f549f0521", "run": "2026-08-28T16:39:13Z", "status": "pass"}
 {"batch": "f", "check": "F14", "codavox": "0.7.0", "commit": "f5a64a9", "detail": "compiler01's agent logged the flush", "run": "2026-08-28T16:39:13Z", "status": "pass"}
+{"batch": "a", "check": "A1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "refused to start (exit 1)", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "a", "check": "A1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "and named the offending key: codavox: parsing config /etc/codavox/config.yaml: yaml: unmarshal errors:", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "a", "check": "A2", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "a typo'd key is a startup error", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "a", "check": "A3", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "refused: codavox: parsing config /etc/codavox/config.yaml: yaml: line 1: did not find exp", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "a", "check": "A4", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "asks for basedir: codavox: publish needs --basedir <dir>", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "a", "check": "A5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 1: codavox: reading config /nonexistent/codavox.yaml: open /nonexistent/codavox.yam", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "a", "check": "A6", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "config.yaml unmodified from the package default (nothing to preserve)", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "reproducible: 898a7803160f", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "matches what the publisher advertises, so seal and publish agree", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B2", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "384 manifest lines", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B3", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "refused", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B4", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "ac50d5ce7a2e33c1d6f3f557baf25d07cc4091ad\tdeployed 2026-09-02 09:47:56", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "valid JSON with a commit", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B6", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 0 and says so \u2014 provenance is best effort, not load-bearing", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B7", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "refused", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B8", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "parses", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B9", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "both refused", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "b", "check": "B10", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "version 0.8.0, 66 lines of help", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "c", "check": "C1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "corrupted production_898a7803160fd660b2d2fcdec282e\u2026", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "c", "check": "C2", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 1: codavox: reading CRL /etc/puppetlabs/puppet/ssl/crl.pem: stat /etc/puppetlabs/puppet/", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "c", "check": "C3", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "starts when the operator says so out loud", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "c", "check": "C4", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 1: codavox: CRL /etc/puppetlabs/puppet/ssl/crl.pem is issued by \"CN=rogue-ca\", which is", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "c", "check": "C5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 1: codavox: --allow-role cannot be empty", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "c", "check": "C6", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 1: codavox: reading basedir directory: open /nonexistent/environments: no such file or d", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "c", "check": "C7", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "untouched", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "d", "check": "D1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "built: 1602 files, 13 MB", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "d", "check": "D2", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "sealed in 27 ms -> bda519c84b91", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "d", "check": "D3", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "publisher reseal wall time ~2s", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "d", "check": "D3", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "artifact: 448K from 13 MB of tree", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "d", "check": "D4", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "publisher advertises 22 environments", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "d", "check": "D5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "resealed 22 environments in ~0s", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "e", "check": "-", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "batch produced no ok/FAIL lines (exit 1)", "run": "2026-09-02T14:56:05Z", "status": "no-output"}
+{"batch": "f", "check": "-", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "batch produced no ok/FAIL lines (exit 1)", "run": "2026-09-02T14:56:05Z", "status": "no-output"}
+{"batch": "g", "check": "G1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 0", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G1", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "publisher advertises 898a7803160f after the deploy", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G2", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "parses", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G3", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "refused", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G4", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "exit 1: codavox: deploy-server needs --api-token, --secret, or both", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "GET /v1/health -> 200 (open, for load balancers)", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "GET /v1/deploys without a token -> 401", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "a wrong token -> 401", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G5", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "the right token -> 200", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G6", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "accepted", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G7", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "unsigned webhook -> 404", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "g", "check": "G8", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "active", "run": "2026-09-02T14:56:05Z", "status": "pass"}
+{"batch": "h", "check": "-", "codavox": "0.8.0", "commit": "ac50d5c", "detail": "batch produced no ok/FAIL lines (exit 1)", "run": "2026-09-02T14:56:05Z", "status": "no-output"}
