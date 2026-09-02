@@ -236,6 +236,13 @@ EOF
         prl.cpus = 2
       end
 
+      # Only dist/, and only so a snapshot package (scripts/use-snapshot) can be
+      # installed from the same path the primary uses. The control repo itself
+      # is not mounted here: a compiler gets code from the publisher, and having
+      # the source tree on it would let a mistake pass that production would
+      # not. create: true so a clone with no dist/ still boots.
+      node.vm.synced_folder "dist", "/vagrant-src/dist", mount_options: ["ro"], create: true
+
       node.vm.provision "shell", inline: common
       node.vm.provision "shell", inline: csr_attributes.call("openvox_compiler")
       node.vm.provision "shell", inline: <<-SHELL
