@@ -19,7 +19,7 @@ profile::base::marker_content: 'cache-flush-1791932595'
 # 0.6 configures by default, so the pin is a version and the package manager
 # picks the architecture. scripts/use-release sets this; scripts/use-snapshot
 # replaces it with a package_source pointing at a locally built rpm.
-codavox::package_source: '/vagrant-src/dist/codavox_snapshot_linux_arm64.rpm'
+codavox::package_ensure: '0.9.0'
 
 # Where the agent deploys code and code-id reads from. Deliberately not the stock
 # /etc/puppetlabs/code/environments: a fresh OpenVox Server ships a populated
