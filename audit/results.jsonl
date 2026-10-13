@@ -323,3 +323,64 @@
 {"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "734baf1", "detail": "publisher no longer advertises audit_h7", "run": "2026-09-02T18:45:12Z", "status": "pass"}
 {"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "734baf1", "detail": "compiler01 (prune on) removed audit_h7", "run": "2026-09-02T18:45:12Z", "status": "pass"}
 {"batch": "h", "check": "H7", "codavox": "0.8.0", "commit": "734baf1", "detail": "the primary's agent (prune off) still serves it, as documented", "run": "2026-09-02T18:45:12Z", "status": "pass"}
+{"batch": "i", "check": "I1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "puppet: /usr/bin/codavox-config-version -> /usr/bin/codavox", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "compiler01: /usr/bin/codavox-config-version -> /usr/bin/codavox", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "compiler02: /usr/bin/codavox-config-version -> /usr/bin/codavox", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I2", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "/usr/bin/codavox carries go1.26.9, matching go.mod at 7cd414a", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I3", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "two runs both applied 'db5cec167218'; compiler01 serves db5cec167218", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I3", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "the catalog's version and the report's configuration_version are both 'db5cec167218'", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I4", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "cut over to /opt/puppetlabs/codavox/environments, and its run applied 'db5cec167218'", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I5", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "compiler01 holds its environment cache (environment_timeout = unlimited)", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I5", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "compiler01 moved db5cec167218 -> 308a0cd1c231, and agent01 applied '308a0cd1c231'", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I6", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "printed 'puppet-production-840252133ef'", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "i", "check": "I7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "67d0218", "detail": "exit 1, nothing on stdout: codavox: environmentpath /etc/puppetlabs/code/environments is not the one codavox serves (/opt/puppetlabs/codavox/environments), so no code_id describes it", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "puppet: 0.8.1-snapshot", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler01: 0.8.1-snapshot", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler02: 0.8.1-snapshot", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F2", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "puppet reports 308a0cd1c231, matching the fleet view", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F2", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler01 reports 308a0cd1c231, matching the fleet view", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F2", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler02 reports 308a0cd1c231, matching the fleet view", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F3", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "a hand-run poll created no peer", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F3", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler01 reported itself back in, so the view is not simply empty", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F3", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "the primary reappears once its agent reports what it serves", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F4", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "catalog and compiler agree on 308a0cd1c231", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F5", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "the primary's catalog and its own code-id agree on 308a0cd1c231", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F5", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "environmentpath is codavox's, so the content matches the code_id", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F6", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "all three refused", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "0 bytes on stderr", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F8", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "still serving 308a0cd1c231 with the publisher down", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F8", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "3 log lines for a ~6-poll outage (was one per poll)", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F8", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "recovery logged", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F9", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "came back on 308a0cd1c231", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F10", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "the incumbent's pidfile survived", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F10", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "codavox deploy still signals the publisher", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F11", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "refused, naming the flag", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F12", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "a revoked compiler still received code", "run": "2026-10-13T22:40:19Z", "status": "fail"}
+{"batch": "f", "check": "F12", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "publisher logged the refusal", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F13", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "the invalid name was reported", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F13", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "the dot-prefixed directory stayed silent", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F13", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "renaming it cleared the warning and the environment is served", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F14", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler01 holds its environment cache (environment_timeout = unlimited)", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F14", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "the module wrote the auth.conf rule", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F14", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler01 moved 308a0cd1c231 -> 815ad2ae805c", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F14", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "agent01's catalog carries cache-flush-1791931685, stamped 815ad2ae805c", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "f", "check": "F14", "codavox": "0.8.1-snapshot+7cd414a", "commit": "8402521", "detail": "compiler01's agent logged the flush", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "primary config carries r10k_timeout: 5m", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "primary config carries agent.max_unpacked: 1G", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H1", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "compiler01 config carries agent.max_unpacked: 1G", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H2", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "exit 0, production reported deployed", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H3", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "exit 1: not in production's Puppetfile: nosuchmodule", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H4", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "exit 1 with the hint", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H5", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "exit 1 after 6s: r10k deploy timed out after 2s", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H5", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "gave up promptly (6s)", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H5", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "r10k's child 12987 is gone (process group signaled)", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H6", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "refused: refusing archive that expands past 4096 bytes at .gitignore", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H6", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "nothing installed under the scratch root", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "deploy --all staged audit_h7", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "compiler01 and the primary's own agent serve audit_h7", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "webhook accepted the deletion (202)", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "history shows a complete all-deploy with reason 'branch for audit_h7 deleted'", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "the deploy reports only what remains: production", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "publisher no longer advertises audit_h7", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "compiler01 (prune on) removed audit_h7", "run": "2026-10-13T22:40:19Z", "status": "pass"}
+{"batch": "h", "check": "H7", "codavox": "0.8.1-snapshot+7cd414a", "commit": "c147e24", "detail": "the primary's agent (prune off) still serves it, as documented", "run": "2026-10-13T22:40:19Z", "status": "pass"}
