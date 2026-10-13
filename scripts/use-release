@@ -16,7 +16,16 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   echo "refusing: the working tree has uncommitted changes; this script commits." >&2
   exit 1
 fi
-if ! curl -fsSL https://packages.harpworks.org/rpm/repodata/primary.xml.gz 2>/dev/null | gzip -dc 2>/dev/null | grep -q "<version epoch=\"0\" ver=\"$version\""; then
+# createrepo_c names its metadata by hash, so the primary file is found through
+# repomd.xml; there is no fixed primary.xml.gz to fetch. The metadata is read
+# whole before it is searched: under pipefail, `grep -q` leaving early can kill
+# gzip with SIGPIPE and report a version that is there as missing.
+repo=https://packages.harpworks.org/rpm
+primary=$(curl -fsSL "$repo/repodata/repomd.xml" 2>/dev/null \
+  | grep -o 'href="repodata/[^"]*-primary\.xml\.gz"' | head -1 | cut -d'"' -f2 || true)
+meta=""
+[ -n "$primary" ] && meta=$(curl -fsSL "$repo/$primary" 2>/dev/null | gzip -dc 2>/dev/null || true)
+if ! grep -q "<version epoch=\"0\" ver=\"$version\"" <<<"$meta"; then
   echo "codavox $version is not in the harpworks repository" >&2
   exit 1
 fi
