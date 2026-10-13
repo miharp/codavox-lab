@@ -188,6 +188,7 @@ printf '     %s\n' "$out"
 if printf '%s' "$out" | grep -qi "allow-role"; then ok "refused, naming the flag"; else bad "not refused"; fi
 
 hdr "F12. revocation still takes effect on the next poll"
+b1=$(vm compiler01 'codavox code-id production'); b2=$(vm compiler02 'codavox code-id production')
 vm puppet 'sudo /opt/puppetlabs/bin/puppetserver ca revoke --certname compiler02.example.com >/dev/null 2>&1'
 # A unique value, and only this file committed. The old version wrote a fixed
 # string and used `git commit -a`, which failed twice over on a rerun: the marker
@@ -201,10 +202,24 @@ sed -i '' "s/^profile::base::marker_content: .*/profile::base::marker_content: '
 if ! git commit -qm "regression: ${marker} deploy" -- data/common.yaml; then
   bad "the marker commit was empty, so the deploy below proves nothing"
 fi
-vm puppet 'sudo /opt/puppetlabs/puppet/bin/r10k deploy environment production -p >/dev/null 2>&1; sudo systemctl reload codavox-publish'
+# Not through vm(): it discards vagrant's own errors, and on 2026-10-13 this ssh
+# never reached the primary — no session in its sshd log — so nothing deployed,
+# both compilers stayed put, and the old `c1 != c2` test reported the revoked
+# one as having caught up. A red that tested nothing, and no trace of why.
+if ! deploy_err=$(vagrant ssh puppet -c 'sudo /opt/puppetlabs/puppet/bin/r10k deploy environment production -p >/dev/null 2>&1 && sudo systemctl reload codavox-publish' 2>&1 >/dev/null); then
+  bad "the deploy did not run: $(printf '%s' "$deploy_err" | tr -d '\r' | tail -1)"
+fi
 sleep 35
 c1=$(vm compiler01 'codavox code-id production'); c2=$(vm compiler02 'codavox code-id production')
-if [ "$c1" != "$c2" ]; then ok "compiler01 moved to ${c1:0:12}, revoked compiler02 held at ${c2:0:12}"; else bad "a revoked compiler still received code"; fi
+# The deploy has to be shown to have moved compiler01 before compiler02 staying
+# put means anything.
+if [ "$c1" = "$b1" ]; then
+  bad "compiler01 is still on ${c1:0:12}, so the deploy never landed and revocation went untested"
+elif [ "$c2" = "$b2" ]; then
+  ok "compiler01 moved ${b1:0:12} -> ${c1:0:12}, revoked compiler02 held at ${c2:0:12}"
+else
+  bad "revoked compiler02 moved ${b2:0:12} -> ${c2:0:12} along with compiler01"
+fi
 if vm puppet 'sudo journalctl -u codavox-publish --since "2 min ago" --no-pager' | grep -qi revoked; then
   ok "publisher logged the refusal"
 else
