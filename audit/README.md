@@ -18,6 +18,7 @@ Run them against a lab that is already up and converged
 | `f-core.sh` | **host** | the core suite plus regressions for #47, #48, #49, #55, #56 |
 | `g-deploy.sh` | primary | `codavox deploy`, and `deploy-server` token auth and history |
 | `h-release-0.8.sh` | **host** | 0.8: module passthroughs, `--modules`, the r10k timeout, the extraction cap, and a webhook branch deletion purged end to end |
+| `i-catalog-label.sh` | **host** | codavox#97: the template's `config_version` script plus codavox's branch labels each catalog with the short `code_id`, the label moves with a deploy under a cache that never times out, and r10k's basedir still gets the commit; the binary carries the Go release `go.mod` names |
 
 Use the runner, which knows which batch goes where and records what happened:
 

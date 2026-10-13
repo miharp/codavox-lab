@@ -28,7 +28,7 @@ RUN_ID=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 # Batches that drive the whole estate from the host. Everything else is piped to
 # the primary, where it needs root and the local codavox binary.
-HOST_BATCHES=" e f h "
+HOST_BATCHES=" e f h i "
 
 # A case rather than an associative array: macOS ships bash 3.2, which has
 # neither, and every other script here assumes the same /bin/bash.
@@ -42,10 +42,11 @@ batch_file() {
     f) echo audit/f-core.sh ;;
     g) echo audit/g-deploy.sh ;;
     h) echo audit/h-release-0.8.sh ;;
+    i) echo audit/i-catalog-label.sh ;;
     *) return 1 ;;
   esac
 }
-ORDER="a b c d e f g h"
+ORDER="a b c d e f g h i"
 
 # The batches commit to this repo to trigger deploys, and `git commit` takes what
 # it is given. Starting dirty once meant an unrelated edit was committed under a
