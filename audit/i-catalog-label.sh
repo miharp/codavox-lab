@@ -1,6 +1,6 @@
 #!/bin/bash
-# Batch I: the catalog label (codavox#97), and the toolchain the release is
-# built with.
+# Batch I: the catalog label (codavox#97, #101), provenance for a branch that
+# has not diverged (codavox#102), and the toolchain the release is built with.
 #
 # codavox config-version shipped with a unit test and a harness feature, but the
 # harness compiles at environment_timeout = 0 from a control repo that points
@@ -76,7 +76,7 @@ served=$(vm compiler01 'codavox code-id production')
 first=$(label agent01)
 sleep 2
 second=$(label agent01)
-if [ -n "$served" ] && [ "$first" = "${served:0:12}" ] && [ "$second" = "$first" ]; then
+if [ -n "$served" ] && [ "$first" = "production-${served:0:12}" ] && [ "$second" = "$first" ]; then
   ok "two runs both applied '$first'; compiler01 serves ${served:0:12}"
 else
   bad "runs applied '$first' then '$second'; compiler01 serves '${served:0:12}'"
@@ -93,7 +93,7 @@ hdr "I4. the primary labels its own catalog with its own code_id"
 envpath=$(vm puppet 'sudo /opt/puppetlabs/bin/puppet config print environmentpath --section server')
 own=$(vm puppet 'codavox code-id production')
 mine=$(label puppet)
-if [ "$envpath" = "/opt/puppetlabs/codavox/environments" ] && [ "$mine" = "${own:0:12}" ]; then
+if [ "$envpath" = "/opt/puppetlabs/codavox/environments" ] && [ "$mine" = "production-${own:0:12}" ]; then
   ok "cut over to $envpath, and its run applied '$mine'"
 else
   bad "environmentpath '$envpath', run applied '$mine', primary serves '${own:0:12}'"
@@ -125,7 +125,7 @@ for _ in $(seq 1 12); do
   [ "$after" != "$before" ] && break
 done
 moved=$(label agent01)
-if [ "$after" != "$before" ] && [ "$moved" = "${after:0:12}" ]; then
+if [ "$after" != "$before" ] && [ "$moved" = "production-${after:0:12}" ]; then
   ok "compiler01 moved ${before:0:12} -> ${after:0:12}, and agent01 applied '$moved'"
 else
   bad "compiler01 ${before:0:12} -> ${after:0:12}, agent01 applied '$moved'"
@@ -152,6 +152,60 @@ if [ "$rc" = "1" ] && [ -z "$stdout" ]; then
 else
   bad "exit $rc, stdout '$stdout'"
 fi
+
+# A branch with no commits of its own has production's tree and HEAD, so the
+# same code_id and the same commit. Before codavox#101 its catalogs carried
+# production's label; before #102 the provenance log dropped its record as a
+# duplicate of production's, so the fleet view showed no commit for it. The
+# name maps to audit_i8 the way r10k sanitizes it, as H7's does.
+hdr "I8. a branch that has not diverged gets its own label and its own commit"
+git branch -D audit-i8 >/dev/null 2>&1 || true
+git branch audit-i8 >/dev/null
+head=$(git rev-parse HEAD)
+vm puppet 'sudo codavox deploy --all >/dev/null 2>&1'
+for _ in $(seq 1 12); do
+  vm compiler01 'ls /opt/puppetlabs/codavox/environments' | grep -q '^audit_i8$' && break
+  sleep 5
+done
+prod_id=$(vm compiler01 'codavox code-id production')
+branch_id=$(vm compiler01 'codavox code-id audit_i8')
+envpath=/opt/puppetlabs/codavox/environments
+prod_label=$(vm compiler01 "codavox-config-version $envpath production")
+branch_label=$(vm compiler01 "codavox-config-version $envpath audit_i8")
+if [ -n "$branch_id" ] && [ "$branch_id" = "$prod_id" ] \
+  && [ "$prod_label" = "production-${prod_id:0:12}" ] && [ "$branch_label" = "audit_i8-${prod_id:0:12}" ]; then
+  ok "both serve ${prod_id:0:12}, labeled '$prod_label' and '$branch_label'"
+else
+  bad "production ${prod_id:0:12} '$prod_label', audit_i8 '${branch_id:0:12}' '$branch_label'"
+fi
+recorded=$(vm puppet "sudo codavox provenance audit_i8 $branch_id 2>/dev/null" | awk 'NR==1 {print $1}')
+if [ -n "$branch_id" ] && [ "$recorded" = "$head" ]; then
+  ok "provenance for audit_i8 names ${head:0:11}, the commit it was deployed from"
+else
+  bad "provenance for audit_i8 names '${recorded:-nothing}', want ${head:0:11}"
+fi
+# The fleet view joins what compiler01 reported to that record; the report
+# follows the swap, so give it a poll to arrive.
+fleet=""
+for _ in $(seq 1 12); do
+  fleet=$(vm puppet 'sudo codavox compilers --json' | python3 -c '
+import json,sys
+for p in json.load(sys.stdin):
+    if p.get("certname")=="compiler01.example.com":
+        print((p.get("commits") or {}).get("audit_i8",""))' 2>/dev/null)
+  [ -n "$fleet" ] && break
+  sleep 5
+done
+if [ "$fleet" = "$head" ]; then
+  ok "the fleet view shows ${head:0:11} for compiler01's audit_i8"
+else
+  bad "the fleet view shows '${fleet:-nothing}' for compiler01's audit_i8, want ${head:0:11}"
+fi
+# Leave nothing behind: r10k purges the deleted branch, the publisher stops
+# advertising it, and compiler01 prunes it. The primary's agent does not prune,
+# so its link goes by hand, as in H7.
+git branch -D audit-i8 >/dev/null
+vm puppet 'sudo codavox deploy --all >/dev/null 2>&1; sudo rm -f /opt/puppetlabs/codavox/environments/audit_i8' >/dev/null
 
 echo
 vm puppet 'sudo codavox compilers' | sed 's/^/     /'
