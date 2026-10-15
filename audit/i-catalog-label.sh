@@ -1,6 +1,7 @@
 #!/bin/bash
 # Batch I: the catalog label (codavox#97, #101), provenance for a branch that
-# has not diverged (codavox#102), and the toolchain the release is built with.
+# has not diverged (codavox#102), the module commits a label leads to
+# (codavox#106), and the toolchain the release is built with.
 #
 # codavox config-version shipped with a unit test and a harness feature, but the
 # harness compiles at environment_timeout = 0 from a control repo that points
@@ -206,6 +207,31 @@ fi
 # so its link goes by hand, as in H7.
 git branch -D audit-i8 >/dev/null
 vm puppet 'sudo codavox deploy --all >/dev/null 2>&1; sudo rm -f /opt/puppetlabs/codavox/environments/audit_i8' >/dev/null
+
+# A control-repo commit pins a module only when its Puppetfile entry is
+# immutable, so provenance also records each git module's commit, read from the
+# module's own checkout (codavox#106). Look it up the way someone holding a run
+# report would, by the label agent01 applied. The commit to expect comes from
+# the remote, not from anything on the primary, and the Forge modules beside it
+# must not be listed as git modules.
+hdr "I9. the label leads to the commit of each git module in the tree"
+remote=https://github.com/miharp/puppet-codavox.git
+tag=$(sed -n "s/^ *tag: *'\([^']*\)'.*/\1/p" Puppetfile | head -1)
+refs=$(git ls-remote "$remote" "refs/tags/$tag*" 2>/dev/null)
+peeled=$(printf '%s\n' "$refs" | awk -v r="refs/tags/$tag^{}" '$2 == r {print $1}')
+want=${peeled:-$(printf '%s\n' "$refs" | awk -v r="refs/tags/$tag" '$2 == r {print $1}')}
+current=$(label agent01)
+out=$(vm puppet "sudo codavox provenance $current --modules 2>&1")
+# Newest record only: a code_id deployed from several commits lists each.
+newest=$(printf '%s\n' "$out" | awk 'NR > 1 && !/^  / {exit} {print}')
+listed=$(printf '%s\n' "$newest" | grep -c '^  ')
+if [ -n "$want" ] && [ "$listed" = "1" ] \
+  && printf '%s\n' "$newest" | awk -v w="$want" -v r="$remote" \
+    '$1 == "modules/codavox" && $2 == w && $3 == r {f = 1} END {exit !f}'; then
+  ok "'$current' names modules/codavox at ${want:0:11}, $tag's commit on $remote"
+else
+  bad "'$current' should list only modules/codavox at '${want:-unresolved}' ($tag); got: $(printf '%s' "$out" | tr '\n' ' ')"
+fi
 
 echo
 vm puppet 'sudo codavox compilers' | sed 's/^/     /'
